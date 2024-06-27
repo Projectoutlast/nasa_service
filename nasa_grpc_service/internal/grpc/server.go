@@ -20,7 +20,7 @@ func Register(gRPCServer *grpc.Server, usecase NasaUsecase) {
 	pb.RegisterNasaServer(gRPCServer, &serverAPI{usecase: usecase})
 }
 
-func (s *serverAPI) GetRandomSpaseImage(req *pb.RandomSpaseImageRequest, stream pb.Nasa_RandomSpaseImageServer) error {
+func (s *serverAPI) RandomSpaseImage(req *pb.RandomSpaseImageRequest, stream pb.Nasa_RandomSpaseImageServer) error {
 	response, err := s.usecase.GetRandomSpaseImage()
 	if err != nil {
 		return status.Error(codes.Internal, codes.Internal.String())

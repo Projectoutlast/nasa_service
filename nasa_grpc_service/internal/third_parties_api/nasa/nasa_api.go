@@ -31,12 +31,12 @@ func (n *NasaAPI) GetRandomSpaseImage() (*RandomSpaseImageResponse, error) {
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if n.checkMediaType(imageData.MediaType) {
 			break
 		}
 
-		if i == n.config.NasaConfig.MaxRetries - 1 {
+		if i == n.config.NasaConfig.MaxRetries-1 {
 			return nil, fmt.Errorf("за 10 запросов неудалось получить от сервиса картинку. Попробуйте снова")
 		}
 	}
