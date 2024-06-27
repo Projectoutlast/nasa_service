@@ -4,6 +4,7 @@ go 1.22.3
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
 	gopkg.in/yaml.v3 v3.0.1
