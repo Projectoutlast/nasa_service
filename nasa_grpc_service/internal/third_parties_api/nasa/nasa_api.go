@@ -72,14 +72,14 @@ func (n *NasaAPI) getImageData() (*RandomSpaseImageResponse, error) {
 		return nil, err
 	}
 
-	var imageResp *RandomSpaseImageResponse
+	var imageResp []*RandomSpaseImageResponse
 	err = json.Unmarshal(body, &imageResp)
 	if err != nil {
 		n.log.Error(err.Error())
 		return nil, err
 	}
 
-	return imageResp, nil
+	return imageResp[0], nil
 }
 
 func (n *NasaAPI) getImage(imageData *RandomSpaseImageResponse) (*RandomSpaseImageResponse, error) {

@@ -5,13 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "semaphore",
+            "name": "main app",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/",
+            "program": "${workspaceFolder}/nasa_grpc_service/cmd",
             "cwd": "${workspaceFolder}",
             "envFile": "",
+            "args": []
+        },
+        {
+            "name": "debug tests",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${workspaceFolder}/nasa_grpc_service/test",
+            "cwd": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}/.env",
             "args": []
         },
     ]
