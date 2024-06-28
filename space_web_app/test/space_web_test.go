@@ -1,31 +1,70 @@
 package test_test
 
 import (
-	"log/slog"
+	"net/http"
 	"os"
 	"testing"
 
 	"github.com/Projectoutlast/space_service/space_web_app/internal/app"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/config"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/client"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
-	"github.com/gorilla/mux"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/routers"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+
+	pb "github.com/Projectoutlast/nasa_proto/gen"
 )
 
-func TestSuccessStartSpaceWebServer(t *testing.T) {
+func TestMain(t *testing.T) {
 	t.Parallel()
 
-	logger, cfg, router := preparationStartSpaceWebServer(t)
+	// Set up before start server
+	cfg, err := config.MustLoad()
+	if err != nil {
+		panic(err)
+	}
+	logger := logging.New(cfg.Environment, os.Stdout)
+	conn, err := grpc.NewClient("localhost:50052", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
 
-	successStartApplication := app.New(logger, cfg, router)
+	defer conn.Close()
 
-	var err error
+	newClient := pb.NewNasaClient(conn)
+	gRPCClient := client.New(&newClient, logger)
+	handlers := httphandlers.New(logger, gRPCClient)
 
-	go func() {
-		err = successStartApplication.HTTPServer.Run()
-	}()
+	r := routers.New(handlers)
+	r.SetUpHandlers()
 
-	require.Nil(t, err)
+	// Error in start server
+	cfg.Server.Port = -4
+	errStartServer := app.New(logger, cfg, r.Mux)
+	err = errStartServer.HTTPServer.Run()
+	require.Error(t, err)
+
+	// Panic test
+	t.Run("TestPanic", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("panic expected")
+			}
+		}()
+		errStartServer.HTTPServer.MustRun()
+	})
+
+	// Success start server
+	cfg.Server.Port = 50061
+
+	application := app.New(logger, cfg, r.Mux)
+	go application.HTTPServer.MustRun()
+
+	res, err := http.Get("http://localhost:50061" + "/random")
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
 }
 
 func TestCreateLogger(t *testing.T) {
@@ -36,17 +75,4 @@ func TestCreateLogger(t *testing.T) {
 
 	logger = logging.New("production", os.Stdout)
 	require.NotNil(t, logger)
-}
-
-func preparationStartSpaceWebServer(_ *testing.T) (*slog.Logger, *config.Config, *mux.Router) {
-	cfg, err := config.MustLoad()
-	if err != nil {
-		panic(err)
-	}
-
-	logger := logging.New(cfg.Environment, os.Stdout)
-
-	r := mux.NewRouter()
-
-	return logger, cfg, r
 }
