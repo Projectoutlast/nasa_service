@@ -18,9 +18,9 @@ HTTP_HTML_FILE 	 := ./http_cov_report/space_web_app.html
 run-nasa-grpc-service:
 	go run $(SERVICE_ENTRY_POINT)
 test-nasa-grpc-service:
-	go test -coverpkg=$(SERVICE_COVERPKG) -coverprofile=$(SERVICE_OUT_FILE) $(SERVICE_TEST_DIR) && go tool cover -func=$(SERVICE_OUT_FILE) && go tool cover -html=$(SERVICE_OUT_FILE) -o $(SERVICE_HTML_FILE)
+	go test -coverpkg=$(SERVICE_COVERPKG) -coverprofile=$(SERVICE_OUT_FILE) $(SERVICE_TEST_DIR) && go tool cover -func=$(SERVICE_OUT_FILE) && go tool cover -html=$(SERVICE_OUT_FILE)
 
 run-space-web-app:
 	go run $(HTTP_ENTRY_POINT)
 test-space-web-app:
-	go test -coverpkg=$(HTTP_COVERPKG) -coverprofile=$(HTTP_OUT_FILE) $(HTTP_TEST_DIR) && go tool cover -func=$(HTTP_OUT_FILE) && go tool cover -html=$(HTTP_OUT_FILE) -o $(HTTP_HTML_FILE)
+	go test -coverpkg=$(HTTP_COVERPKG) -coverprofile=$(HTTP_OUT_FILE) $(HTTP_TEST_DIR) && go tool cover -func=$(HTTP_OUT_FILE) && go tool cover -html=$(HTTP_OUT_FILE)

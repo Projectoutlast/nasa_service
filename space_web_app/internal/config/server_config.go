@@ -8,4 +8,6 @@ type ServerConfig struct {
 	ReadTimeout    time.Duration `yaml:"read_timeout" env:"READ_TIMEOUT"`
 	WriteTimeout   time.Duration `yaml:"write_timeout" env:"WRITE_TIMEOUT"`
 	MaxHeaderBytes int           `yaml:"max_header_bytes" env:"MAX_HEADER_BYTES"`
+	FileServerDir  string        `yaml:"file_server_dir" env:"FILE_SERVER_DIR"`
+	StaticPrefix   string        `yaml:"static_prefix" env:"STATIC_PREFIX"`
 }

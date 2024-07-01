@@ -35,9 +35,10 @@ func main() {
 
 	handlers := httphandlers.New(logger, gRPCClient)
 
-	router := routers.New(handlers)
+	router := routers.New(handlers, cfg.Server.FileServerDir, cfg.Server.StaticPrefix)
 
 	router.SetUpHandlers()
+	router.SetUpFileServer()
 
 	app := app.New(logger, cfg, router.Mux)
 
