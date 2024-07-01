@@ -37,7 +37,7 @@ func TestMain(t *testing.T) {
 	gRPCClient := client.New(&newClient, logger)
 	handlers := httphandlers.New(logger, gRPCClient)
 
-	r := routers.New(handlers)
+	r := routers.New(handlers, cfg.Server.FileServerDir, cfg.Server.StaticPrefix)
 	r.SetUpHandlers()
 
 	// Error in start server
