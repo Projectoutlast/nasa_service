@@ -4,8 +4,6 @@
 
 *.out
 
-*.html
-
 *_config.yaml
 
 *.pem

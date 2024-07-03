@@ -1,0 +1,75 @@
+<!doctype html>
+{{define "base"}}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{template "title" .}}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .content-wrapper {
+                min-height: calc(100vh - 200px); /* 200px учитывает высоту header и footer */
+            }
+        </style>
+    </head>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/random">Get random image</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+              </li>
+            </ul>
+            <a class="btn btn-outline-success ms-auto me-2" href="/registration" type="submit">Регистрация</a>
+          </div>
+        </div>
+      </nav>
+    <body>
+        <header>
+            <div class="container-fluid bg-dark">
+                <div class="row">
+                    <div class="col" style="height: 100px"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid text-center text-bg-dark content-wrapper">
+            <div class="row h-100">
+                <div class="col"></div>
+                <div class="col-4 my-auto">
+                    {{template "content" .}}
+                </div>
+                <div class="col"></div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="container-fluid text-center bg-dark">
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col text-white">
+                        Developed by <a href="https://github.com/Projectoutlast" target="_blank" class="fst-italic text-light bg-dark">ProjectOutlast</a>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+    </body>
+</html>
+{{end}}
