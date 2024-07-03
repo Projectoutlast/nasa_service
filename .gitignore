@@ -5,3 +5,11 @@
 *.out
 
 *.html
+
+*_config.yaml
+
+*.pem
+*.ed
+*.pub
+
+*.db
