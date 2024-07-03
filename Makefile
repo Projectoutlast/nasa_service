@@ -28,7 +28,11 @@ test-space-web-app:
 migrate-auth:
 	go run ./auth_service/cmd/migrator --storage-path=./auth_service/storage/auth.db --migrations-path=./auth_service/migrations
 
+run-auth-app:
+	go run auth_service/cmd/auth/main.go
+
 run-app:
 	docker-compose up -d
+
 run-all-services:
 	./start.sh

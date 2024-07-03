@@ -12,4 +12,4 @@ RUN chmod +x start.sh
 
 CMD ["./start.sh"]
 
-EXPOSE 50051
+# EXPOSE 50051 50052 50061
