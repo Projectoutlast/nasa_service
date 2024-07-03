@@ -24,3 +24,7 @@ run-space-web-app:
 	go run $(HTTP_ENTRY_POINT)
 test-space-web-app:
 	go test -coverpkg=$(HTTP_COVERPKG) -coverprofile=$(HTTP_OUT_FILE) $(HTTP_TEST_DIR) && go tool cover -func=$(HTTP_OUT_FILE) && go tool cover -html=$(HTTP_OUT_FILE)
+run-app:
+	docker-compose up -d
+run-all-services:
+	./start.sh

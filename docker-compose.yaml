@@ -1,0 +1,13 @@
+version: '3'
+services:
+  nasa:
+    build: ./
+    ports:
+      - "50051:50051"
+      - "50052:50052"
+      - "50061:50061"
+    restart: unless-stopped
+    command: ["./start.sh"]
+    volumes:
+      - .:/space_service
+    tty: true
