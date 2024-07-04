@@ -10,8 +10,9 @@ import (
 )
 
 type Config struct {
-	Environment string       `yaml:"environment" env:"ENVIRONMENT" default:"development"`
-	Server      ServerConfig `yaml:"http_server_config"`
+	Environment    string       `yaml:"environment" env:"ENVIRONMENT" default:"development"`
+	Server         ServerConfig `yaml:"http_server_config"`
+	ClientsAddress Clients      `yaml:"clients_address"`
 }
 
 func MustLoad() (*Config, error) {

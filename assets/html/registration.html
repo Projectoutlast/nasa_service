@@ -4,24 +4,39 @@
 
 {{define "content"}}
 <div>
-    <form method="POST">
+    <form id="registrationForm" action="/registration-process" method="POST">
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Введите email</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" required>
         </div>
         <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Введите пароль</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
+            <input type="password" class="form-control" id="exampleInputPassword1" name="password" required>
         </div>
         <div class="mb-3">
             <label for="exampleInputPassword2" class="form-label">Повторите пароль</label>
-            <input type="password" class="form-control" id="exampleInputPassword2">
+            <input type="password" class="form-control" id="exampleInputPassword2" name="confirm_password" required>
         </div>
         <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1" name="stay_logged_in">
             <label class="form-check-label" for="exampleCheck1">Оставаться в системе</label>
         </div>
-        <a href="/registration-process" class="btn btn-light">Зарегистрироваться</a>
+        <input type="submit" value="Зарегистрироваться">
     </form>
+    <p id="error-message" style="color: red; display: none;">Пароли не совпадают. Пожалуйста, попробуйте еще раз.</p>
 </div>
+
+<script>
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        var password1 = document.getElementById('exampleInputPassword1').value;
+        var password2 = document.getElementById('exampleInputPassword2').value;
+
+        if (password1 !== password2) {
+            event.preventDefault();
+            document.getElementById('error-message').style.display = 'block';
+        } else {
+            document.getElementById('error-message').style.display = 'none';
+        }
+    });
+</script>
 {{end}}

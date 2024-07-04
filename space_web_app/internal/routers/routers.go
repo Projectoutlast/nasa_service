@@ -31,6 +31,7 @@ func (r *Routers) SetUpHandlers() {
 	r.Mux.HandleFunc("/", r.httpHandlers.Index).Methods("GET")
 	r.Mux.HandleFunc("/random", r.httpHandlers.GetRandomSpaseImage).Methods("GET")
 	r.Mux.HandleFunc("/registration", r.httpHandlers.Registration).Methods("GET")
+	r.Mux.HandleFunc("/registration-process", r.httpHandlers.RegistrationProcess).Methods("POST")
 }
 
 func (r *Routers) SetUpFileServer() {

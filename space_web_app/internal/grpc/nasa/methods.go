@@ -1,27 +1,14 @@
-package client
+package nasa
 
 import (
 	"context"
 	"io"
-	"log/slog"
 
 	pb "github.com/Projectoutlast/nasa_proto/gen"
 )
 
-type NasaGRPCClient struct {
-	client pb.NasaClient
-	log    *slog.Logger
-}
-
-func New(client *pb.NasaClient, log *slog.Logger) *NasaGRPCClient {
-	return &NasaGRPCClient{
-		*client,
-		log,
-	}
-}
-
 func (c *NasaGRPCClient) GetRandomSpaseImage(ctx context.Context, req *pb.RandomSpaseImageRequest) (*pb.RandomSpaseImageResponse, error) {
-	stream, err := c.client.RandomSpaseImage(ctx, req)
+	stream, err := c.nasa.RandomSpaseImage(ctx, req)
 
 	if err != nil {
 		c.log.Error(err.Error())

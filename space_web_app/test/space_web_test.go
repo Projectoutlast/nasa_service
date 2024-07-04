@@ -7,7 +7,8 @@ import (
 
 	"github.com/Projectoutlast/space_service/space_web_app/internal/app"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/config"
-	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/client"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/auth"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/nasa"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/routers"
@@ -26,16 +27,26 @@ func TestMain(t *testing.T) {
 		panic(err)
 	}
 	logger := logging.New(cfg.Environment, os.Stdout)
-	conn, err := grpc.NewClient("localhost:50052", grpc.WithInsecure())
+
+	connNasa, err := grpc.NewClient(cfg.ClientsAddress.Nasa, grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
+	defer connNasa.Close()
 
-	defer conn.Close()
+	connAuth, err := grpc.NewClient(cfg.ClientsAddress.Auth, grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	defer connAuth.Close()
 
-	newClient := pb.NewNasaClient(conn)
-	gRPCClient := client.New(&newClient, logger)
-	handlers := httphandlers.New(logger, gRPCClient)
+	nasaClient := pb.NewNasaClient(connNasa)
+	authCliet := pb.NewAuthClient(connAuth)
+
+	gRPCClient := nasa.New(&nasaClient, logger)
+	authGRPCClient := auth.New(&authCliet, logger)
+
+	handlers := httphandlers.New(authGRPCClient, logger, gRPCClient)
 
 	r := routers.New(handlers, cfg.Server.FileServerDir, cfg.Server.StaticPrefix)
 	r.SetUpHandlers()

@@ -6,7 +6,7 @@ PID1=$!
 make run-space-web-app &
 PID2=$!
 
-make run-auth-app &
+make run-auth-service &
 PID3=$!
 
 shutdown() {

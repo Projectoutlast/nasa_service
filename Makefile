@@ -1,7 +1,7 @@
 PATH_TO_ENV_FILE := "/Users/user/go/src/space_service/.env"
 
 # AUTH SERVICE
-AUTH_ENTRY_POINT := auth_service/cmd/main.go
+AUTH_ENTRY_POINT := auth_service/cmd/auth/main.go
 AUTH_COVERPKG 	:= ./auth_service/...
 AUTH_OUT_FILE 	:= ./auth_cov_report/auth_grpc_service.out
 AUTH_TEST_DIR 	:= ./auth_service/test

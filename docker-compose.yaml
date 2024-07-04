@@ -5,6 +5,7 @@ services:
     ports:
       - "50051:50051"
       - "50052:50052"
+      - "50053:50053"
       - "50061:50061"
     restart: unless-stopped
     command: ["./start.sh"]
