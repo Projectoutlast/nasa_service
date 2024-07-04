@@ -35,7 +35,7 @@ func (i *Issuer) IssueToken(email string, services []string) (string, error) {
 	token := jwt.NewWithClaims(&jwt.SigningMethodEd25519{}, jwt.MapClaims{
 		"exp":   now.Add(time.Hour * 24).Unix(),
 		"email": email,
-		"roles": services,
+		"allowed_services": services,
 	})
 
 	tokenString, err := token.SignedString(i.key)
