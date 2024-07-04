@@ -11,7 +11,7 @@ import (
 
 type Config struct {
 	Environment string `yaml:"environment" env:"ENVIRONMENT" default:"development"`
-	AuthConfig  Auth   ` yaml:"grpc"`
+	AuthConfig  Auth   `yaml:"grpc"`
 	PKeyPath    string `yaml:"pkey_path" env:"PKEY_PATH"`
 	StoragePath string `yaml:"storage_path" env:"STORAGE_PATH"`
 }

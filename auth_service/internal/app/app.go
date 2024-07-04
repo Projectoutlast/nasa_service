@@ -1,6 +1,7 @@
 package app
 
 import (
+	"database/sql"
 	"log/slog"
 
 	grpcapp "github.com/Projectoutlast/space_service/auth_service/internal/app/grpc"
@@ -16,17 +17,14 @@ type App struct {
 	GRPCServer *grpcapp.App
 }
 
-func New(log *slog.Logger, cfg *config.Config) *App {
+func New(log *slog.Logger, cfg *config.Config, db *sql.DB) *App {
 
 	issuer, err := jwtIssuer.NewIssuer(cfg.PKeyPath, log)
 	if err != nil {
 		panic(err)
 	}
 
-	newStorage, err := storage.New(log, cfg.StoragePath)
-	if err != nil {
-		panic(err)
-	}
+	newStorage := storage.New(log, db)
 
 	authServices := services.New(issuer, log, newStorage)
 

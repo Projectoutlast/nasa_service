@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"log/slog"
 
 	"golang.org/x/crypto/bcrypt"
@@ -53,7 +54,7 @@ func (a *AuthUsecase) Login(email, password string) (string, error) {
 	}
 
 	if !a.checkPasswordHash(password, user.Hash) {
-		return "", err
+		return "", errors.New("invalid password")
 	}
 
 	services, err := a.storage.GetUserServices(user.Email)

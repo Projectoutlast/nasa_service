@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"os"
 
 	"github.com/Projectoutlast/space_service/auth_service/internal/app"
@@ -16,7 +17,16 @@ func main() {
 
 	newLogger := logging.New(cfg.Environment, os.Stdout)
 
-	application := app.New(newLogger, cfg)
+	db, err := sql.Open("sqlite3", cfg.StoragePath)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := db.Ping(); err != nil {
+		panic(err)
+	}
+
+	application := app.New(newLogger, cfg, db)
 
 	application.GRPCServer.MustRun()
 }
