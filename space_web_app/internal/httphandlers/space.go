@@ -19,8 +19,13 @@ func (h *HTTPHandlers) GetRandomSpaseImage(w http.ResponseWriter, r *http.Reques
 	req := pb.RandomSpaseImageRequest{}
 
 	resp, err := h.nasaClient.GetRandomSpaseImage(ctx, &req)
+
+	session, _ := h.store.Get(r, "flash-session")
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		session.AddFlash(err.Error(), "error")
+		session.Save(r, w)
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 

@@ -6,22 +6,31 @@ import (
 )
 
 type indexData struct {
-	PageTitle string
-	Content   string
+	Content    string
+	SuccessMsg []interface{}
+	ErrorMsg   []interface{}
 }
 
 func (h *HTTPHandlers) Index(w http.ResponseWriter, r *http.Request) {
+	session, _ := h.store.Get(r, "flash-session")
+
+	successMessageFlashes := session.Flashes("success")
+	errorMessageFlashes := session.Flashes("error")
+
+	session.Save(r, w)
+
+	data := indexData{
+		Content:    "Welcome to my magic space",
+		SuccessMsg: successMessageFlashes,
+		ErrorMsg:   errorMessageFlashes,
+	}
+
 	files := []string{
 		"./assets/html/index.html",
 		baseSpaceLayout,
 	}
 
 	tmpl := template.Must(template.ParseFiles(files...))
-
-	data := indexData{
-		PageTitle: "Space Web App",
-		Content:   "Welcome to my magic space",
-	}
 
 	tmpl.Execute(w, data)
 }

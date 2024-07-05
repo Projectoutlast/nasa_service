@@ -9,6 +9,10 @@ import (
 )
 
 func (h *HTTPHandlers) Registration(w http.ResponseWriter, r *http.Request) {
+	session, _ := h.store.Get(r, "flash-session")
+	messageFlashes := session.Flashes("error")
+	session.Save(r, w)
+	
 	files := []string{
 		"./assets/html/registration.html",
 		baseSpaceLayout,
@@ -16,27 +20,33 @@ func (h *HTTPHandlers) Registration(w http.ResponseWriter, r *http.Request) {
 
 	tmpl := template.Must(template.ParseFiles(files...))
 
-	tmpl.Execute(w, &RegistrationResponse{PageTitle: "Registration"})
+	tmpl.Execute(w, messageFlashes)
 }
 
 func (h *HTTPHandlers) RegistrationProcess(w http.ResponseWriter, r *http.Request) {
 	email, password := r.FormValue("email"), r.FormValue("password")
-
-	if email == "" || password == "" {
-		h.log.Error("email or password is empty")
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
 
 	_, err := h.authClient.Register(context.Background(), &pb.RegistrationRequest{
 		Email:    email,
 		Password: password,
 	})
 
+	session, _ := h.store.Get(r, "flash-session")
+
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		session.AddFlash(err.Error(), "error")
+		err := session.Save(r, w)
+
+		if err != nil {
+			h.log.Error(err.Error())
+		}
+
+		http.Redirect(w, r, "/registration", http.StatusSeeOther)
 		return
 	}
+
+	session.AddFlash("Successfully registered!", "success")
+	session.Save(r, w)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

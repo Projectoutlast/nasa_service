@@ -1,7 +1,17 @@
 {{template "base" .}}
 
-{{define "title"}}{{.PageTitle}}{{end}}
+{{define "title"}}Registration{{end}}
 
 {{define "content"}}
-<h1>{{.Content}}</h1>
+<div class="container-fluid">
+    {{if .ErrorMsg}}
+    <p style="color: yellow;">{{index .ErrorMsg 0}}</p>
+    {{end}}
+    {{if .SuccessMsg}}
+    <p style="color: rgb(69, 177, 98);">{{index .SuccessMsg 0}}</p>
+    {{end}}
+</div>
+<div class="container-fluid">
+    {{.Content}}
+</div>
 {{end}}
