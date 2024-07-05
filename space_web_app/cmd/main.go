@@ -5,8 +5,6 @@ import (
 
 	"github.com/Projectoutlast/space_service/space_web_app/internal/app"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/config"
-	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/auth"
-	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/nasa"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/interceptors"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
@@ -39,10 +37,7 @@ func main() {
 	defer connAuth.Close()
 	authClient := pb.NewAuthClient(connAuth)
 
-	nasaGRPCClient := nasa.New(&nasaClient, logger)
-	authGRPCClient := auth.New(&authClient, logger)
-
-	handlers := httphandlers.New(authGRPCClient, logger, nasaGRPCClient)
+	handlers := httphandlers.New(authClient, logger, nasaClient)
 
 	newMiddleware := middleware.New(logger)
 

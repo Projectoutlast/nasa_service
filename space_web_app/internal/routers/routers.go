@@ -33,9 +33,14 @@ func New(
 
 func (r *Routers) SetUpHandlers() {
 	r.Mux.HandleFunc("/", r.middleware.Logging(r.httpHandlers.Index)).Methods("GET")
+
 	r.Mux.HandleFunc("/random", r.middleware.Logging(r.httpHandlers.GetRandomSpaseImage)).Methods("GET")
+
 	r.Mux.HandleFunc("/registration", r.middleware.Logging(r.httpHandlers.Registration)).Methods("GET")
 	r.Mux.HandleFunc("/registration-process", r.middleware.Logging(r.httpHandlers.RegistrationProcess)).Methods("POST")
+
+	r.Mux.HandleFunc("/login", r.middleware.Logging(r.httpHandlers.Login)).Methods("GET")
+	r.Mux.HandleFunc("/login-process", r.middleware.Logging(r.httpHandlers.LoginProcess)).Methods("POST")
 }
 
 func (r *Routers) SetUpFileServer() {

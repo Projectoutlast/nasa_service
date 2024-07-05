@@ -3,6 +3,7 @@ package httphandlers
 import (
 	"context"
 	"encoding/base64"
+	"io"
 	"net/http"
 	"text/template"
 
@@ -18,7 +19,7 @@ func (h *HTTPHandlers) GetRandomSpaseImage(w http.ResponseWriter, r *http.Reques
 	ctx := context.Background()
 	req := pb.RandomSpaseImageRequest{}
 
-	resp, err := h.nasaClient.GetRandomSpaseImage(ctx, &req)
+	resp, err := h.getRandomSpaseImageStreamProcess(ctx, &req)
 
 	session, _ := h.store.Get(r, "flash-session")
 	if err != nil {
@@ -45,4 +46,34 @@ func (h *HTTPHandlers) GetRandomSpaseImage(w http.ResponseWriter, r *http.Reques
 	}
 
 	tmpl.Execute(w, data)
+}
+
+func (c *HTTPHandlers) getRandomSpaseImageStreamProcess(ctx context.Context, req *pb.RandomSpaseImageRequest) (*pb.RandomSpaseImageResponse, error) {
+	stream, err := c.nasaClient.RandomSpaseImage(ctx, req)
+
+	if err != nil {
+		c.log.Error(err.Error())
+	}
+
+	response := &pb.RandomSpaseImageResponse{}
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			c.log.Error(err.Error())
+
+			return nil, err
+		}
+
+		response.Copyright = res.Copyright
+		response.Date = res.Date
+		response.Explanation = res.Explanation
+		response.Title = res.Title
+		response.Data = res.Data
+	}
+
+	return response, nil
 }
