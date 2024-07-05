@@ -11,6 +11,7 @@ import (
 	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/nasa"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/routers"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -48,7 +49,9 @@ func TestMain(t *testing.T) {
 
 	handlers := httphandlers.New(authGRPCClient, logger, gRPCClient)
 
-	r := routers.New(handlers, cfg.Server.FileServerDir, cfg.Server.StaticPrefix)
+	newMiddleware := middleware.New(logger)
+
+	r := routers.New(handlers, cfg.Server.FileServerDir, newMiddleware, cfg.Server.StaticPrefix)
 	r.SetUpHandlers()
 
 	// Error in start server

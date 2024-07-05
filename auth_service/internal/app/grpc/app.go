@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	authGrpc "github.com/Projectoutlast/space_service/auth_service/internal/grpc"
+	"github.com/Projectoutlast/space_service/auth_service/internal/interceptor"
 )
 
 type App struct {
@@ -17,7 +18,9 @@ type App struct {
 }
 
 func New(log *slog.Logger, authService authGrpc.AuthUsecase, port int) *App {
-	gRPCServer := grpc.NewServer()
+	gRPCServer := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.UnaryInterceptor(log)),
+	)
 
 	authGrpc.Register(gRPCServer, log, authService)
 

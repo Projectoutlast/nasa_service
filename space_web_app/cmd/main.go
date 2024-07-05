@@ -8,7 +8,9 @@ import (
 	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/auth"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/grpc/nasa"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/interceptors"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/routers"
 	"google.golang.org/grpc"
 
@@ -23,14 +25,14 @@ func main() {
 
 	logger := logging.New(cfg.Environment, os.Stdout)
 
-	connNasa, err := grpc.NewClient(cfg.ClientsAddress.Nasa, grpc.WithInsecure())
+	connNasa, err := grpc.NewClient(cfg.ClientsAddress.Nasa, grpc.WithInsecure(), grpc.WithStreamInterceptor(interceptors.StreamLoggingInterceptor(logger)))
 	if err != nil {
 		panic(err)
 	}
 	defer connNasa.Close()
 	nasaClient := pb.NewNasaClient(connNasa)
 
-	connAuth, err := grpc.NewClient(cfg.ClientsAddress.Auth, grpc.WithInsecure())
+	connAuth, err := grpc.NewClient(cfg.ClientsAddress.Auth, grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptors.UnaryLoggingInterceptor(logger)))
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +44,9 @@ func main() {
 
 	handlers := httphandlers.New(authGRPCClient, logger, nasaGRPCClient)
 
-	router := routers.New(handlers, cfg.Server.FileServerDir, cfg.Server.StaticPrefix)
+	newMiddleware := middleware.New(logger)
+
+	router := routers.New(handlers, cfg.Server.FileServerDir, newMiddleware, cfg.Server.StaticPrefix)
 
 	router.SetUpHandlers()
 	router.SetUpFileServer()

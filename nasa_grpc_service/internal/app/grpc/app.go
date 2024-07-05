@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	nasagrpc "github.com/Projectoutlast/space_service/nasa_grpc_service/internal/grpc"
+	"github.com/Projectoutlast/space_service/nasa_grpc_service/internal/interceptor"
 )
 
 type App struct {
@@ -17,7 +18,9 @@ type App struct {
 }
 
 func New(log *slog.Logger, nasaService nasagrpc.NasaUsecase, port int) *App {
-	gRPCServer := grpc.NewServer()
+	gRPCServer := grpc.NewServer(
+		grpc.StreamInterceptor(interceptor.NewStreamInterceptor(log)),
+	)
 
 	nasagrpc.Register(gRPCServer, nasaService)
 
