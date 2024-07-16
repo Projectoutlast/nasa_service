@@ -5,7 +5,7 @@ import (
 
 	"github.com/Projectoutlast/space_service/space_web_app/internal/app"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/config"
-	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/public"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/interceptors"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
@@ -28,7 +28,7 @@ func main() {
 		panic(err)
 	}
 	defer connNasa.Close()
-	nasaClient := pb.NewNasaClient(connNasa)
+	_ = pb.NewNasaClient(connNasa)
 
 	connAuth, err := grpc.NewClient(cfg.ClientsAddress.Auth, grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptors.UnaryLoggingInterceptor(logger)))
 	if err != nil {
@@ -37,7 +37,7 @@ func main() {
 	defer connAuth.Close()
 	authClient := pb.NewAuthClient(connAuth)
 
-	handlers := httphandlers.New(authClient, logger, nasaClient)
+	handlers := httphandlers.New(authClient, logger)
 
 	newMiddleware := middleware.New(logger)
 

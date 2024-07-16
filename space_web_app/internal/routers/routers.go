@@ -3,7 +3,7 @@ package routers
 import (
 	"net/http"
 
-	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
+	httphandlers "github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/public"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
 	"github.com/gorilla/mux"
 )
@@ -32,15 +32,14 @@ func New(
 }
 
 func (r *Routers) SetUpHandlers() {
+	// Public routers
 	r.Mux.HandleFunc("/", r.middleware.Logging(r.httpHandlers.Index)).Methods("GET")
-
-	r.Mux.HandleFunc("/random", r.middleware.Logging(r.httpHandlers.GetRandomSpaseImage)).Methods("GET")
-
 	r.Mux.HandleFunc("/registration", r.middleware.Logging(r.httpHandlers.Registration)).Methods("GET")
 	r.Mux.HandleFunc("/registration-process", r.middleware.Logging(r.httpHandlers.RegistrationProcess)).Methods("POST")
-
 	r.Mux.HandleFunc("/login", r.middleware.Logging(r.httpHandlers.Login)).Methods("GET")
 	r.Mux.HandleFunc("/login-process", r.middleware.Logging(r.httpHandlers.LoginProcess)).Methods("POST")
+
+	// Secure routers
 }
 
 func (r *Routers) SetUpFileServer() {

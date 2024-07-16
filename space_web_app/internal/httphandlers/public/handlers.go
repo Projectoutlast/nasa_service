@@ -9,18 +9,17 @@ import (
 )
 
 var (
-	baseSpaceLayout = "./assets/html/base.layout.html"
+	baseSpaceLayout = "./assets/html/public/base.layout.html"
 	baseUrl         = "http://localhost:50061"
 )
 
 type HTTPHandlers struct {
 	authClient pb.AuthClient
 	log        *slog.Logger
-	nasaClient pb.NasaClient
 	store      *sessions.CookieStore
 }
 
-func New(authClient pb.AuthClient, log *slog.Logger, nasaClient pb.NasaClient) *HTTPHandlers {
+func New(authClient pb.AuthClient, log *slog.Logger) *HTTPHandlers {
 	store := sessions.NewCookieStore([]byte("something-very-secret"))
 	store.Options = &sessions.Options{
 		Path:     "/",
@@ -33,7 +32,6 @@ func New(authClient pb.AuthClient, log *slog.Logger, nasaClient pb.NasaClient) *
 	return &HTTPHandlers{
 		authClient: authClient,
 		log:        log,
-		nasaClient: nasaClient,
 		store:      store,
 	}
 }

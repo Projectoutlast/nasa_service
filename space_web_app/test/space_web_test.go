@@ -7,7 +7,7 @@ import (
 
 	"github.com/Projectoutlast/space_service/space_web_app/internal/app"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/config"
-	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/public"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/routers"
@@ -39,10 +39,10 @@ func TestMain(t *testing.T) {
 	}
 	defer connAuth.Close()
 
-	nasaClient := pb.NewNasaClient(connNasa)
+	_ = pb.NewNasaClient(connNasa)
 	authCliet := pb.NewAuthClient(connAuth)
 
-	handlers := httphandlers.New(authCliet, logger, nasaClient)
+	handlers := httphandlers.New(authCliet, logger)
 
 	newMiddleware := middleware.New(logger)
 

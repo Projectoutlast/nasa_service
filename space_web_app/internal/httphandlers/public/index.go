@@ -20,13 +20,13 @@ func (h *HTTPHandlers) Index(w http.ResponseWriter, r *http.Request) {
 	session.Save(r, w)
 
 	data := indexData{
-		Content:    "Welcome to my magic space",
+		Content:    "Welcome to NASA space sevice",
 		SuccessMsg: successMessageFlashes,
 		ErrorMsg:   errorMessageFlashes,
 	}
 
 	files := []string{
-		"./assets/html/index.html",
+		"./assets/html/public/index.html",
 		baseSpaceLayout,
 	}
 

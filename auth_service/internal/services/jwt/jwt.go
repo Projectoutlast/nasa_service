@@ -33,7 +33,7 @@ func NewIssuer(privateKeyPath string, log *slog.Logger) (*Issuer, error) {
 func (i *Issuer) IssueToken(email string, services []string) (string, error) {
 	now := time.Now()
 	token := jwt.NewWithClaims(&jwt.SigningMethodEd25519{}, jwt.MapClaims{
-		"exp":   now.Add(time.Hour * 24).Unix(),
+		"exp":   now.Add(time.Minute * 3).Unix(),
 		"email": email,
 		"allowed_services": services,
 	})

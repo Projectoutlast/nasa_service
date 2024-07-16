@@ -31,7 +31,7 @@ func (h *HTTPHandlers) GetRandomSpaseImage(w http.ResponseWriter, r *http.Reques
 	}
 
 	files := []string{
-		"./assets/html/random.html",
+		"./assets/html/secure/random.html",
 		baseSpaceLayout,
 	}
 
