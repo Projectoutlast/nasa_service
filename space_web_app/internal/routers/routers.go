@@ -3,43 +3,49 @@ package routers
 import (
 	"net/http"
 
-	httphandlers "github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/public"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/public"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/secure"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
 	"github.com/gorilla/mux"
 )
 
 type Routers struct {
-	Mux           *mux.Router
-	httpHandlers  *httphandlers.HTTPHandlers
-	fileServerDir string
-	middleware    *middleware.Middleware
-	staticPrefix  string
+	Mux                *mux.Router
+	publicHTTPHandlers *public.PublicHTTPHandlers
+	secureHTTPHandlers *secure.SecureHTTPHandlers
+	fileServerDir      string
+	middleware         *middleware.Middleware
+	staticPrefix       string
 }
 
 func New(
-	httpHandlers *httphandlers.HTTPHandlers,
+	httpHandlers *public.PublicHTTPHandlers,
+	secureHTTPHandlers *secure.SecureHTTPHandlers,
 	fileServerDir string,
 	middleware *middleware.Middleware,
 	staticPrefix string,
 ) *Routers {
 	return &Routers{
-		Mux:           mux.NewRouter(),
-		httpHandlers:  httpHandlers,
-		fileServerDir: fileServerDir,
-		middleware:    middleware,
-		staticPrefix:  staticPrefix,
+		Mux:                mux.NewRouter(),
+		publicHTTPHandlers: httpHandlers,
+		secureHTTPHandlers: secureHTTPHandlers,
+		fileServerDir:      fileServerDir,
+		middleware:         middleware,
+		staticPrefix:       staticPrefix,
 	}
 }
 
 func (r *Routers) SetUpHandlers() {
 	// Public routers
-	r.Mux.HandleFunc("/", r.middleware.Logging(r.httpHandlers.Index)).Methods("GET")
-	r.Mux.HandleFunc("/registration", r.middleware.Logging(r.httpHandlers.Registration)).Methods("GET")
-	r.Mux.HandleFunc("/registration-process", r.middleware.Logging(r.httpHandlers.RegistrationProcess)).Methods("POST")
-	r.Mux.HandleFunc("/login", r.middleware.Logging(r.httpHandlers.Login)).Methods("GET")
-	r.Mux.HandleFunc("/login-process", r.middleware.Logging(r.httpHandlers.LoginProcess)).Methods("POST")
+	r.Mux.HandleFunc("/", r.middleware.Logging(r.publicHTTPHandlers.Index)).Methods("GET")
+	r.Mux.HandleFunc("/registration", r.middleware.Logging(r.publicHTTPHandlers.Registration)).Methods("GET")
+	r.Mux.HandleFunc("/registration-process", r.middleware.Logging(r.publicHTTPHandlers.RegistrationProcess)).Methods("POST")
+	r.Mux.HandleFunc("/login", r.middleware.Logging(r.publicHTTPHandlers.Login)).Methods("GET")
+	r.Mux.HandleFunc("/login-process", r.middleware.Logging(r.publicHTTPHandlers.LoginProcess)).Methods("POST")
 
 	// Secure routers
+	r.Mux.HandleFunc("/home", r.middleware.SecureLogging(r.secureHTTPHandlers.Index)).Methods("GET")
+	r.Mux.HandleFunc("/random", r.middleware.SecureLogging(r.secureHTTPHandlers.GetRandomSpaseImage)).Methods("GET")
 }
 
 func (r *Routers) SetUpFileServer() {

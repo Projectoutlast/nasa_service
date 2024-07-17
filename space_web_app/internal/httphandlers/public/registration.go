@@ -1,4 +1,4 @@
-package httphandlers
+package public
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 	pb "github.com/Projectoutlast/nasa_proto/gen"
 )
 
-func (h *HTTPHandlers) Registration(w http.ResponseWriter, r *http.Request) {
+func (h *PublicHTTPHandlers) Registration(w http.ResponseWriter, r *http.Request) {
 	session, _ := h.store.Get(r, "flash-session")
 	messageFlashes := session.Flashes("error")
 	session.Save(r, w)
-	
+
 	files := []string{
 		"./assets/html/public/registration.html",
 		baseSpaceLayout,
@@ -23,7 +23,7 @@ func (h *HTTPHandlers) Registration(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, messageFlashes)
 }
 
-func (h *HTTPHandlers) RegistrationProcess(w http.ResponseWriter, r *http.Request) {
+func (h *PublicHTTPHandlers) RegistrationProcess(w http.ResponseWriter, r *http.Request) {
 	email, password := r.FormValue("email"), r.FormValue("password")
 
 	_, err := h.authClient.Registration(context.Background(), &pb.RegistrationRequest{

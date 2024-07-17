@@ -1,4 +1,4 @@
-package httphandlers
+package public
 
 import (
 	"log/slog"
@@ -13,13 +13,13 @@ var (
 	baseUrl         = "http://localhost:50061"
 )
 
-type HTTPHandlers struct {
+type PublicHTTPHandlers struct {
 	authClient pb.AuthClient
 	log        *slog.Logger
 	store      *sessions.CookieStore
 }
 
-func New(authClient pb.AuthClient, log *slog.Logger) *HTTPHandlers {
+func New(authClient pb.AuthClient, log *slog.Logger) *PublicHTTPHandlers {
 	store := sessions.NewCookieStore([]byte("something-very-secret"))
 	store.Options = &sessions.Options{
 		Path:     "/",
@@ -29,7 +29,7 @@ func New(authClient pb.AuthClient, log *slog.Logger) *HTTPHandlers {
 		SameSite: http.SameSiteLaxMode,
 	}
 
-	return &HTTPHandlers{
+	return &PublicHTTPHandlers{
 		authClient: authClient,
 		log:        log,
 		store:      store,

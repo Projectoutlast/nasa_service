@@ -1,4 +1,4 @@
-package httphandlers
+package secure
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type randomImageData struct {
 	Content   string
 }
 
-func (h *HTTPHandlers) GetRandomSpaseImage(w http.ResponseWriter, r *http.Request) {
+func (h *SecureHTTPHandlers) GetRandomSpaseImage(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	req := pb.RandomSpaseImageRequest{}
 
@@ -48,7 +48,7 @@ func (h *HTTPHandlers) GetRandomSpaseImage(w http.ResponseWriter, r *http.Reques
 	tmpl.Execute(w, data)
 }
 
-func (c *HTTPHandlers) getRandomSpaseImageStreamProcess(ctx context.Context, req *pb.RandomSpaseImageRequest) (*pb.RandomSpaseImageResponse, error) {
+func (c *SecureHTTPHandlers) getRandomSpaseImageStreamProcess(ctx context.Context, req *pb.RandomSpaseImageRequest) (*pb.RandomSpaseImageResponse, error) {
 	stream, err := c.nasaClient.RandomSpaseImage(ctx, req)
 
 	if err != nil {

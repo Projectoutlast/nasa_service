@@ -11,6 +11,7 @@ import (
 
 type Config struct {
 	Environment    string       `yaml:"environment" env:"ENVIRONMENT" default:"development"`
+	PubKeyPath     string       `yaml:"pubkey_path" env:"PUBKEY_PATH"`
 	Server         ServerConfig `yaml:"http_server_config"`
 	ClientsAddress Clients      `yaml:"clients_address"`
 }

@@ -8,6 +8,8 @@ import (
 	"github.com/Projectoutlast/space_service/space_web_app/internal/app"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/config"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/public"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/secure"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/jwt"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/routers"
@@ -32,6 +34,7 @@ func TestMain(t *testing.T) {
 		panic(err)
 	}
 	defer connNasa.Close()
+	nasaClient := pb.NewNasaClient(connNasa)
 
 	connAuth, err := grpc.NewClient(cfg.ClientsAddress.Auth, grpc.WithInsecure())
 	if err != nil {
@@ -42,11 +45,17 @@ func TestMain(t *testing.T) {
 	_ = pb.NewNasaClient(connNasa)
 	authCliet := pb.NewAuthClient(connAuth)
 
-	handlers := httphandlers.New(authCliet, logger)
+	publicHandlers := public.New(authCliet, logger)
+	secureHandlers := secure.New(logger, nasaClient)
 
-	newMiddleware := middleware.New(logger)
+	validator, err := jwt.NewValidator(cfg.PubKeyPath)
+	if err != nil {
+		panic(err)
+	}
 
-	r := routers.New(handlers, cfg.Server.FileServerDir, newMiddleware, cfg.Server.StaticPrefix)
+	newMiddleware := middleware.New(logger, validator)
+
+	r := routers.New(publicHandlers, secureHandlers, cfg.Server.FileServerDir, newMiddleware, cfg.Server.StaticPrefix)
 	r.SetUpHandlers()
 
 	// Error in start server

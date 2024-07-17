@@ -1,4 +1,4 @@
-package httphandlers
+package public
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ type indexData struct {
 	ErrorMsg   []interface{}
 }
 
-func (h *HTTPHandlers) Index(w http.ResponseWriter, r *http.Request) {
+func (h *PublicHTTPHandlers) Index(w http.ResponseWriter, r *http.Request) {
 	session, _ := h.store.Get(r, "flash-session")
 
 	successMessageFlashes := session.Flashes("success")

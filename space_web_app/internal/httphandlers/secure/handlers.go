@@ -1,4 +1,4 @@
-package httphandlers
+package secure
 
 import (
 	"log/slog"
@@ -9,17 +9,17 @@ import (
 )
 
 var (
-	baseSpaceLayout = "./assets/html/base.layout.html"
+	baseSpaceLayout = "./assets/html/secure/base.layout.html"
 	baseUrl         = "http://localhost:50061"
 )
 
-type HTTPHandlers struct {
+type SecureHTTPHandlers struct {
 	log        *slog.Logger
 	nasaClient pb.NasaClient
 	store      *sessions.CookieStore
 }
 
-func New(log *slog.Logger, nasaClient pb.NasaClient) *HTTPHandlers {
+func New(log *slog.Logger, nasaClient pb.NasaClient) *SecureHTTPHandlers {
 	store := sessions.NewCookieStore([]byte("something-very-secret"))
 	store.Options = &sessions.Options{
 		Path:     "/",
@@ -29,7 +29,7 @@ func New(log *slog.Logger, nasaClient pb.NasaClient) *HTTPHandlers {
 		SameSite: http.SameSiteLaxMode,
 	}
 
-	return &HTTPHandlers{
+	return &SecureHTTPHandlers{
 		log:        log,
 		nasaClient: nasaClient,
 		store:      store,

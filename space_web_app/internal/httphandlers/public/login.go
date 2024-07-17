@@ -1,14 +1,15 @@
-package httphandlers
+package public
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"text/template"
 
 	pb "github.com/Projectoutlast/nasa_proto/gen"
 )
 
-func (h *HTTPHandlers) Login(w http.ResponseWriter, r *http.Request) {
+func (h *PublicHTTPHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	session, _ := h.store.Get(r, "flash-session")
 	errorFlashes := session.Flashes("error")
 	session.Save(r, w)
@@ -23,10 +24,10 @@ func (h *HTTPHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, errorFlashes)
 }
 
-func (h *HTTPHandlers) LoginProcess(w http.ResponseWriter, r *http.Request) {
+func (h *PublicHTTPHandlers) LoginProcess(w http.ResponseWriter, r *http.Request) {
 	email, password := r.FormValue("email"), r.FormValue("password")
 
-	_, err := h.authClient.Login(context.Background(), &pb.LoginRequest{
+	resp, err := h.authClient.Login(context.Background(), &pb.LoginRequest{
 		Email:    email,
 		Password: password,
 	})
@@ -48,5 +49,6 @@ func (h *HTTPHandlers) LoginProcess(w http.ResponseWriter, r *http.Request) {
 	session.AddFlash("Successfully logged in!", "success")
 	session.Save(r, w)
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"token": resp.Token})
 }

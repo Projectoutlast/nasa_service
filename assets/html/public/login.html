@@ -2,6 +2,38 @@
 
 {{define "title"}}Login{{end}}
 
+<script>
+    async function handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('exampleInputEmail1').value;
+        const password = document.getElementById('exampleInputPassword1').value;
+        // const stayLoggedIn = document.getElementById('exampleCheck1').checked;
+
+        const response = await fetch('/login-process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                email: email,
+                password: password,
+                // stay_logged_in: stayLoggedIn
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('auth-token', data.token);
+            alert('Login successful!');
+            // Redirect to another page if needed
+            window.location.href = '/home';
+        } else {
+            alert('Login failed');
+        }
+    }
+</script>
+
 {{define "content"}}
 <div class="container-fluid">
     {{if .}}
@@ -9,7 +41,7 @@
     {{end}}
 </div>
 <div>
-    <form id="registrationForm" action="/login-process" method="POST">
+    <form id="registrationForm" onsubmit="handleLogin(event)">
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Введите email</label>
             <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" required>
@@ -25,7 +57,5 @@
         <input type="submit" value="Войти">
     </form>
 </div>
-
-<script src="static/js/login.js"></script>
 
 {{end}}
