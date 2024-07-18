@@ -11,6 +11,7 @@ import (
 )
 
 type App struct {
+	config     *config.Config
 	httpServer *http.Server
 	log        *slog.Logger
 	router     *mux.Router
@@ -25,6 +26,7 @@ func New(log *slog.Logger, config *config.Config, router *mux.Router) *App {
 	}
 
 	return &App{
+		config:     config,
 		httpServer: httpServer,
 		log:        log,
 		router:     router,
@@ -40,7 +42,7 @@ func (a *App) MustRun() {
 func (a *App) Run() error {
 	a.log.Info(fmt.Sprintf("HTTP server is running on port %s", a.httpServer.Addr))
 
-	if err := a.httpServer.ListenAndServe(); err != nil {
+	if err := a.httpServer.ListenAndServeTLS(a.config.CertFile, a.config.KeyFile); err != nil {
 		a.log.Error(err.Error())
 		return err
 	}

@@ -2,7 +2,6 @@ package public
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"text/template"
 
@@ -46,9 +45,17 @@ func (h *PublicHTTPHandlers) LoginProcess(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth-token",
+		Value:    resp.Token,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		MaxAge:   3600,
+	})
+
 	session.AddFlash("Successfully logged in!", "success")
 	session.Save(r, w)
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"token": resp.Token})
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }

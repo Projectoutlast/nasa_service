@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -11,26 +10,17 @@ func (m *Middleware) SecureLogging(f http.HandlerFunc) http.HandlerFunc {
 		start := time.Now()
 		m.log.Info("started handling request", "method", r.Method, "url", r.URL.String())
 
-		tokenHeader := r.Header.Get("Authorization")
-		if tokenHeader == "" {
-			m.log.Error("token header is empty")
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			return
-		}
-
-		splitToken := strings.Split(tokenHeader, " ")
-		if len(splitToken) != 2 || splitToken[0] != "Bearer" {
-			m.log.Error("token header is malformed")
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			return
-		}
-
-		token := splitToken[1]
-
-		_, err := m.validator.GetToken(token)
+		authToken, err := r.Cookie("auth-token")
 		if err != nil {
 			m.log.Error(err.Error())
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+
+		_, err = m.validator.GetToken(authToken.Value)
+		if err != nil {
+			m.log.Error(err.Error())
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 			return
 		}
 

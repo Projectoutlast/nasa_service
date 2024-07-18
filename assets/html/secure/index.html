@@ -2,46 +2,6 @@
 
 {{define "title"}}Home page{{end}}
 
-<script>
-    // Функция для выполнения защищенных запросов
-    async function fetchWithAuth(url, options = {}) {
-        const token = localStorage.getItem('auth-token');
-        if (!token) {
-            alert('No token found, please login first.');
-            window.location.href = '/login';
-            return;
-        }
-
-        // Добавляем токен в заголовок запроса
-        options.headers = {
-            ...options.headers,
-            'Authorization': `Bearer ${token}`
-        };
-
-        const response = await fetch(url, options);
-        if (response.status === 401) {
-            // Если сервер возвращает 401 (Unauthorized), перенаправляем на страницу логина
-            alert('Unauthorized, please login again.');
-            window.location.href = '/login';
-        }
-        return response;
-    }
-
-    // Пример использования функции для выполнения запроса к защищенному ресурсу
-    async function loadProtectedData() {
-        const response = await fetchWithAuth('/home');
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Protected Data:', data);
-        } else {
-            console.error('Failed to load protected data.');
-        }
-    }
-
-    // Загружаем защищенные данные при загрузке страницы
-    window.onload = loadProtectedData;
-</script>
-
 {{define "content"}}
 <div class="container-fluid">
     {{if .ErrorMsg}}

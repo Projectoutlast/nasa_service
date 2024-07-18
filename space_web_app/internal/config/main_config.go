@@ -14,6 +14,8 @@ type Config struct {
 	PubKeyPath     string       `yaml:"pubkey_path" env:"PUBKEY_PATH"`
 	Server         ServerConfig `yaml:"http_server_config"`
 	ClientsAddress Clients      `yaml:"clients_address"`
+	CertFile       string       `yaml:"cert_file" env:"CERT_FILE"`
+	KeyFile        string       `yaml:"key_file" env:"KEY_FILE"`
 }
 
 func MustLoad() (*Config, error) {

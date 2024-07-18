@@ -13,3 +13,5 @@
 *.db
 
 *_service.html
+
+*.pem
