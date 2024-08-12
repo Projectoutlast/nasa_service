@@ -30,6 +30,15 @@ func (h *PublicHTTPHandlers) Logout() http.HandlerFunc {
 		parameters.Add("client_id", os.Getenv("AUTH0_CLIENT_ID"))
 		logoutUrl.RawQuery = parameters.Encode()
 
+		session, err := h.store.Get(r, "state")
+		session.Values = make(map[interface{}]interface{})
+		err = session.Save(r, w)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		http.Redirect(w, r, logoutUrl.String(), http.StatusTemporaryRedirect)
 	}
 }

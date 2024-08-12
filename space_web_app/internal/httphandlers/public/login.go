@@ -13,7 +13,7 @@ func (p *PublicHTTPHandlers) Handler(auth *authenticator.Authenticator) http.Han
 	return func(w http.ResponseWriter, r *http.Request) {
 		state, err := generateRandomState()
 		if err != nil {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -22,7 +22,7 @@ func (p *PublicHTTPHandlers) Handler(auth *authenticator.Authenticator) http.Han
 		err = sessions.Save(r, w)
 
 		if err != nil {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
