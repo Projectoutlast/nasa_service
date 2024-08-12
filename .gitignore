@@ -5,6 +5,7 @@
 *.out
 
 *_config.yaml
+config_test.yaml
 
 *.pem
 *.ed

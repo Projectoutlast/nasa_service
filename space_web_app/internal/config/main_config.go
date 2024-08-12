@@ -41,7 +41,7 @@ func MustLoad() (*Config, error) {
 
 func fetchConfigPath() string {
 	res := flag.String("config", "", "путь к файлу конфигурации")
-
+	
 	flag.Parse()
 
 	return *res

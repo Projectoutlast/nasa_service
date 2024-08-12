@@ -13,14 +13,14 @@ func (m *Middleware) SecureLogging(f http.HandlerFunc) http.HandlerFunc {
 		authToken, err := r.Cookie("auth-token")
 		if err != nil {
 			m.log.Error(err.Error())
-			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
 		_, err = m.validator.GetToken(authToken.Value)
 		if err != nil {
 			m.log.Error(err.Error())
-			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
