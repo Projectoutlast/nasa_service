@@ -1,61 +1,43 @@
 package public
 
 import (
-	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"net/http"
-	"text/template"
 
-	pb "github.com/Projectoutlast/nasa_proto/gen"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/authenticator"
+	"github.com/gorilla/sessions"
 )
 
-func (h *PublicHTTPHandlers) Login(w http.ResponseWriter, r *http.Request) {
-	session, _ := h.store.Get(r, "flash-session")
-	errorFlashes := session.Flashes("error")
-	session.Save(r, w)
-
-	files := []string{
-		"./assets/html/public/login.html",
-		baseSpaceLayout,
-	}
-
-	tmpl := template.Must(template.ParseFiles(files...))
-
-	tmpl.Execute(w, errorFlashes)
-}
-
-func (h *PublicHTTPHandlers) LoginProcess(w http.ResponseWriter, r *http.Request) {
-	email, password := r.FormValue("email"), r.FormValue("password")
-
-	resp, err := h.authClient.Login(context.Background(), &pb.LoginRequest{
-		Email:    email,
-		Password: password,
-	})
-
-	session, _ := h.store.Get(r, "flash-session")
-
-	if err != nil {
-		session.AddFlash(err.Error(), "error")
-		err := session.Save(r, w)
-
+func (p *PublicHTTPHandlers) Handler(auth *authenticator.Authenticator) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		state, err := generateRandomState()
 		if err != nil {
-			h.log.Error(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
 		}
 
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
+		session, err := p.store.Get(r, "state")
+		session.Values["state"] = state
+		err = sessions.Save(r, w)
+
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, auth.AuthCodeURL(state), http.StatusTemporaryRedirect)
+	}
+}
+
+func generateRandomState() (string, error) {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "auth-token",
-		Value:    resp.Token,
-		Path:     "/",
-		Secure:   true,
-		HttpOnly: true,
-		MaxAge:   3600,
-	})
+	state := base64.StdEncoding.EncodeToString(b)
 
-	session.AddFlash("Successfully logged in!", "success")
-	session.Save(r, w)
-
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	return state, nil
 }

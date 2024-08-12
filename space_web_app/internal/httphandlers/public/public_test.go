@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	httpsessions "github.com/Projectoutlast/space_service/space_web_app/internal/http_sessions"
+
 	pb "github.com/Projectoutlast/nasa_proto/gen"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +18,9 @@ type mockAuthClient struct {
 func TestNew(t *testing.T) {
 	authClient := &mockAuthClient{}
 
-	publicHandlers := New(authClient, slog.Default())
+	httpSessions := httpsessions.New()
+
+	publicHandlers := New(authClient, slog.Default(), httpSessions)
 
 	assert.IsType(t, &PublicHTTPHandlers{}, publicHandlers)
 	assert.NotNil(t, publicHandlers.store)
@@ -31,6 +35,6 @@ func TestHandlerc(t *testing.T) {
 	// authClient := &mockAuthClient{}
 
 	// publicHandlers := New(authClient, slog.Default())
-	
+
 	// req, err := http.NewRequest("GET", "/", nil)
 }

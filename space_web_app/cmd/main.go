@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/Projectoutlast/space_service/space_web_app/internal/app"
+	"github.com/Projectoutlast/space_service/space_web_app/internal/authenticator"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/config"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/public"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/httphandlers/secure"
@@ -12,6 +13,7 @@ import (
 	"github.com/Projectoutlast/space_service/space_web_app/internal/logging"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/middleware"
 	"github.com/Projectoutlast/space_service/space_web_app/internal/routers"
+	httpsessions "github.com/Projectoutlast/space_service/space_web_app/internal/http_sessions"
 	"google.golang.org/grpc"
 
 	pb "github.com/Projectoutlast/nasa_proto/gen"
@@ -39,17 +41,24 @@ func main() {
 	defer connAuth.Close()
 	authClient := pb.NewAuthClient(connAuth)
 
-	publicHandlers := public.New(authClient, logger)
+	httpSessions := httpsessions.New()
+
+	publicHandlers := public.New(authClient, logger, httpSessions)
 	secureHandlers := secure.New(logger, nasaClient)
-	
+
 	validator, err := jwt.NewValidator(cfg.PubKeyPath)
 	if err != nil {
 		panic(err)
 	}
 
-	newMiddleware := middleware.New(logger, validator)
+	newMiddleware := middleware.New(logger, httpSessions, validator)
 
-	router := routers.New(publicHandlers, secureHandlers, cfg.Server.FileServerDir, newMiddleware, cfg.Server.StaticPrefix)
+	auth, err := authenticator.New()
+	if err != nil {
+		panic(err)
+	}
+
+	router := routers.New(auth, publicHandlers, secureHandlers, cfg.Server.FileServerDir, newMiddleware, cfg.Server.StaticPrefix)
 
 	router.SetUpHandlers()
 	router.SetUpFileServer()

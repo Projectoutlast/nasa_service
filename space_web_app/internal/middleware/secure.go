@@ -10,16 +10,15 @@ func (m *Middleware) SecureLogging(f http.HandlerFunc) http.HandlerFunc {
 		start := time.Now()
 		m.log.Info("started handling request", "method", r.Method, "url", r.URL.String())
 
-		authToken, err := r.Cookie("auth-token")
+		session, err := m.store.Get(r, "state")
+
 		if err != nil {
 			m.log.Error(err.Error())
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		_, err = m.validator.GetToken(authToken.Value)
-		if err != nil {
-			m.log.Error(err.Error())
+		if session.Values["profile"] == nil {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
